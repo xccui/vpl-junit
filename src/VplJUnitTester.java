@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
  * @author hg
  */
 public class VplJUnitTester extends RunListener {
+    private static final String TEST_PATH = ".";
 
     private final Pattern POINT_REGEX = Pattern.compile(".*_(\\d+)P.*");
 
@@ -46,7 +47,7 @@ public class VplJUnitTester extends RunListener {
 
             // Sanity check
             if (classesToRun.isEmpty()) {
-                System.out.println("There are no classes in the directory " + Paths.get(".").toAbsolutePath() + " which could be tested !");
+                System.out.println("There are no classes in the directory " + Paths.get(TEST_PATH).toAbsolutePath() + " which could be tested !");
                 System.out.println(" Option A: Hand over the classes which should be tested as arguments to the jar");
                 System.out.println(" Option B: Ensure that your test classes names are ended with  'Tests'  (eg. SimpleTests)");
                 System.out.println(" Or have a look into the documentation: https://github.com/bytebang/vpl-junit");
@@ -97,9 +98,9 @@ public class VplJUnitTester extends RunListener {
             // No Exception -> Test has succeeded
             if (null == t) {
                 totalPoints += points;
-                System.out.println("Comment :=>>\uD83D\uDE04 " + testName + " SUCCESS -> You get *" + points + "* points!");
+                System.out.println("Comment :=>>\uD83D\uDE04 " + testName + " SUCCESS -> You get " + points + " points!");
             } else {
-                String message = t.getMessage() != null ? t.getMessage() : "No message";
+                String message = t.toString();
                 String[] lines = message.split(System.lineSeparator());
                 System.out.println("Comment :=>>\uD83D\uDE2D " + testName + " FAILED!!!");
                 System.out.println("<|--");
@@ -206,7 +207,7 @@ public class VplJUnitTester extends RunListener {
      */
     public static List<String> findTestClasses() {
         List<String> foundClasses = new ArrayList<>();
-        try (DirectoryStream<Path> stream = Files.newDirectoryStream(Paths.get("."), "*.class")) {
+        try (DirectoryStream<Path> stream = Files.newDirectoryStream(Paths.get(TEST_PATH), "*.class")) {
             for (Path entry : stream) {
                 String classFilename = entry.getFileName().toString();
                 if (classFilename.matches(".*[Tt]est[s]?.class")) {
